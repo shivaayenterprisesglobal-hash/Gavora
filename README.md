@@ -103,7 +103,7 @@ Gavora/
 ├── client/                     # React storefront + admin console
 │   └── src/
 │       ├── components/         # layout, ui primitives, shared common pieces
-│       ├── context/            # AuthContext, CartContext
+│       ├── context/            # auth and cart providers, plus their hooks
 │       ├── layouts/            # PublicLayout, AuthLayout, AdminLayout
 │       ├── lib/                # axios API client
 │       ├── pages/              # route components (storefront, account, admin)
