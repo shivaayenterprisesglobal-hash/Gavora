@@ -1,0 +1,31 @@
+{
+  "name": "@gavora/client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gavora storefront and admin console — React 19 + Vite + Tailwind CSS",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "axios": "^1.13.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^10.10.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.0",
+    "globals": "^16.5.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.2.2"
+  }
+}
