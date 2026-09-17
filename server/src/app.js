@@ -64,13 +64,13 @@ export function createApp() {
       referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     }),
   );
-  app.use(cors(corsOptions));
   app.use(compression());
 
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ extended: true, limit: '1mb' }));
   app.use(cookieParser());
   app.use(sanitizeRequest);
+  // Mutating requests only (POST/PUT/PATCH/DELETE). Safe for static GETs.
   app.use(verifyRequestOrigin);
 
   if (!isTest) {
@@ -81,7 +81,11 @@ export function createApp() {
     );
   }
 
-  app.use('/api', apiLimiter, apiRouter);
+  // CORS must stay on /api only. A global cors() callback rejects disallowed
+  // Origin headers with JSON 403 before express.static runs — which turns
+  // /assets/*.css into application/json and blanks the storefront when
+  // CLIENT_URL/CORS_ORIGINS do not yet include the live host.
+  app.use('/api', cors(corsOptions), apiLimiter, apiRouter);
 
   if (isProduction) {
     serveProductionClient(app);
