@@ -1,7 +1,9 @@
 import { Router } from 'express';
 
+import { getPublicStore } from '../controllers/settingsController.js';
 import adminRouter from './admin.routes.js';
 import authRouter from './auth.routes.js';
+import cartRouter from './cart.routes.js';
 import categoryRouter from './category.routes.js';
 import healthRouter from './health.routes.js';
 import orderRouter from './order.routes.js';
@@ -19,9 +21,11 @@ apiRouter.get('/', (_req, res) => {
       version: '1.0.0',
       endpoints: [
         '/api/health',
+        '/api/store',
         '/api/auth',
         '/api/products',
         '/api/categories',
+        '/api/cart',
         '/api/orders',
         '/api/users',
         '/api/payments',
@@ -32,9 +36,11 @@ apiRouter.get('/', (_req, res) => {
 });
 
 apiRouter.use('/health', healthRouter);
+apiRouter.get('/store', getPublicStore);
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/products', productRouter);
 apiRouter.use('/categories', categoryRouter);
+apiRouter.use('/cart', cartRouter);
 apiRouter.use('/orders', orderRouter);
 apiRouter.use('/users', userRouter);
 apiRouter.use('/payments', paymentRouter);

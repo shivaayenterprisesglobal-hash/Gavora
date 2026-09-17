@@ -13,3 +13,6 @@ export function useCart() {
   }
   return context;
 }
+
+/** Hard ceiling per line item, mirroring what the server will enforce. */
+export const MAX_QUANTITY_PER_ITEM = 10;

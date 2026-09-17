@@ -1,6 +1,8 @@
+import './config/dns.js';
 import { createApp } from './app.js';
-import { connectDatabase, disconnectDatabase } from './config/db.js';
+import { disconnectDatabase } from './config/db.js';
 import { env, isProduction } from './config/env.js';
+import { prisma } from './config/prisma.js';
 import { logger } from './utils/logger.js';
 
 const SHUTDOWN_TIMEOUT_MS = 10000;
@@ -8,13 +10,16 @@ const SHUTDOWN_TIMEOUT_MS = 10000;
 let server;
 let shuttingDown = false;
 
+function maskDbError(error) {
+  return String(error?.message || '').replace(/postgresql:\/\/[^@\s]+@/gi, 'postgresql://***@');
+}
+
 async function shutdown(reason, exitCode = 0) {
   if (shuttingDown) return;
   shuttingDown = true;
 
   logger.info(`Shutting down (${reason})`);
 
-  // Hard deadline so a stuck connection cannot keep the process alive forever.
   const forceExit = setTimeout(() => {
     logger.error('Graceful shutdown timed out, forcing exit');
     process.exit(1);
@@ -28,21 +33,26 @@ async function shutdown(reason, exitCode = 0) {
       });
       logger.info('HTTP server closed');
     }
+    await prisma.$disconnect();
     await disconnectDatabase();
     clearTimeout(forceExit);
     process.exit(exitCode);
   } catch (error) {
-    logger.error(`Error during shutdown: ${error.message}`);
+    logger.error(`Error during shutdown: ${maskDbError(error)}`);
     process.exit(1);
   }
 }
 
 async function start() {
-  // In development the server binds even if Mongo is unreachable, so the HTTP
-  // layer stays testable while the connection retries in the background.
-  const connected = await connectDatabase();
-  if (!connected && !isProduction) {
-    logger.warn('Starting HTTP server without a database connection (retrying in background)');
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    logger.info('PostgreSQL connected');
+  } catch (error) {
+    logger.error(`PostgreSQL connection failed: ${maskDbError(error)}`);
+    if (isProduction) {
+      throw error;
+    }
+    logger.warn('Starting HTTP server without a database connection');
   }
 
   const app = createApp();
@@ -75,6 +85,6 @@ process.on('uncaughtException', (error) => {
 });
 
 start().catch((error) => {
-  logger.error(`Failed to start server: ${error.message}`);
+  logger.error(`Failed to start server: ${maskDbError(error)}`);
   process.exit(1);
 });

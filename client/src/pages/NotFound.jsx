@@ -1,7 +1,14 @@
 import Button from '@/components/ui/Button';
 import Container from '@/components/ui/Container';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 
 export function NotFound() {
+  useDocumentMeta({
+    title: 'Page not found',
+    description: 'This page does not exist on Gavora.',
+    noIndex: true,
+  });
+
   return (
     <Container className="flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
       <p className="gv-eyebrow mb-3">Error 404</p>

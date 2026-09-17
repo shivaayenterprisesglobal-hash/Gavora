@@ -1,8 +1,8 @@
 # Gavora
 
-A premium multi-category e-commerce platform: a React storefront, a separate admin console, and an Express + MongoDB API. Supports online payment via Razorpay and Cash on Delivery.
+A premium multi-category e-commerce platform: a React storefront, a separate admin console, and an Express + MongoDB API. Cash on Delivery checkout is live locally. Online payment via Razorpay is not connected yet.
 
-> **Status: Phase 1 — foundation.** The architecture, configuration, data models, route table and design system are in place. Business logic (auth, catalogue, cart, checkout, payments, admin CRUD) is implemented in later phases. Nothing is deployed.
+> **Status: local client demo.** Catalogue, cookie authentication, persistent cart, COD orders, customer accounts and the admin console run locally. Seeded products are demonstration data, not a live merchant catalogue. Razorpay is not connected. Nothing is deployed.
 
 ## Stack
 
@@ -12,7 +12,7 @@ A premium multi-category e-commerce platform: a React storefront, a separate adm
 | Backend  | Node.js 20+, Express 5, Mongoose 9, Zod                              |
 | Database | MongoDB (Atlas)                                                      |
 | Auth     | JWT access + refresh tokens, bcrypt password hashing                 |
-| Payments | Razorpay (online) and Cash on Delivery                               |
+| Payments | Cash on Delivery (live). Razorpay online payment is not connected    |
 
 ## Prerequisites
 
@@ -92,6 +92,8 @@ All commands run from the repository root.
 | `npm run build`       | Production build of the storefront into `client/dist`      |
 | `npm run preview`     | Serve the production build locally                        |
 | `npm start`           | Run the API without file watching                         |
+| `npm run seed`        | Seed development catalogue into MongoDB (never production) |
+| `npm run seed:admin`  | Provision a development admin from ADMIN_EMAIL/PASSWORD    |
 | `npm run lint`        | Lint both workspaces                                      |
 | `npm run lint:fix`    | Lint and auto-fix both workspaces                         |
 | `npm run format`      | Format the repository with Prettier                       |
@@ -127,13 +129,15 @@ Gavora/
 | Route              | Purpose                                        |
 | ------------------ | ---------------------------------------------- |
 | `/api/health`      | Liveness and database readiness                |
+| `/api/store`       | Public store identity (name, contact placeholders) |
 | `/api/auth`        | Customer signup, login, logout, token refresh  |
 | `/api/products`    | Public catalogue: list, search, detail         |
 | `/api/categories`  | Public category list and detail                |
+| `/api/cart`        | Authenticated customer cart                    |
 | `/api/orders`      | Authenticated customer orders                  |
 | `/api/users`       | Profile and saved addresses                    |
-| `/api/payments`    | Razorpay order creation and verification       |
-| `/api/admin`       | Admin-only dashboard and management            |
+| `/api/payments`    | Razorpay endpoints (not connected; currently 501) |
+| `/api/admin`       | Admin-only dashboard, catalogue, orders, customers, settings |
 
 Endpoints not yet implemented return `501` with a description of what they will do. Every response uses one envelope:
 
@@ -146,11 +150,11 @@ Endpoints not yet implemented return `501` with a description of what they will 
 
 - Passwords are stored only as bcrypt hashes. `passwordHash` is `select: false`, so it is excluded from queries unless explicitly requested, and is stripped from every JSON response.
 - All environment variables are validated by Zod at startup; secrets shorter than 32 characters or still containing placeholder text abort the boot.
-- Secrets live only in `server/.env`. The client receives nothing beyond the Razorpay *publishable* key id, because Vite inlines every `VITE_*` variable into the browser bundle.
+- Secrets live only in `server/.env`. The client must never receive JWT secrets, the database URI, or payment secrets. Vite inlines every `VITE_*` variable into the browser bundle, so only public values belong in `client/.env`.
 - Request bodies, params and query strings are stripped of MongoDB operator keys (`$`, `.`) before reaching a handler.
 - CORS runs against an explicit origin allowlist with credentials enabled.
 - `helmet` sets security headers; JSON bodies are capped at 1 MB; rate limits apply to the whole API and more tightly to credential endpoints.
-- Order money is never taken from the client. Subtotal, discount, shipping and total are recalculated server-side from the catalogue at checkout, and Razorpay signatures are verified server-side before an order is marked paid.
+- Order money is never taken from the client. Subtotal, discount, shipping and total are recalculated server-side from the catalogue at checkout. Online payment signatures will be verified server-side when Razorpay is connected.
 - Error responses use fixed codes and safe messages; stack traces are development-only.
 
 ## Design system

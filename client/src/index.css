@@ -1,79 +1,140 @@
 @import 'tailwindcss';
 
 /*
- * Gavora design tokens.
+ * Gavora design tokens — light-first retail.
  *
  * Tailwind v4 is CSS-first: everything declared in @theme becomes both a CSS
  * custom property and a utility class (e.g. --color-ink-900 -> bg-ink-900).
- * This block is the single source of truth for the brand — retune here, not in
- * components.
+ * Token *names* are stable so existing utilities keep working; the values
+ * define the new bright storefront language.
  */
 @theme {
-  /* Deep ink navy: surfaces, headers, primary actions. */
-  --color-ink-50: #f4f6fa;
-  --color-ink-100: #e5e9f2;
-  --color-ink-200: #c7d0e2;
-  --color-ink-300: #9caacb;
-  --color-ink-400: #6c7ea9;
-  --color-ink-500: #4a5c88;
-  --color-ink-600: #35476e;
-  --color-ink-700: #253458;
-  --color-ink-800: #182444;
-  --color-ink-900: #101a2e;
-  --color-ink-950: #0a1121;
+  /* Warm charcoal: text, chrome, primary surfaces. Not navy. */
+  --color-ink-50: #f7f6f4;
+  --color-ink-100: #eceae6;
+  --color-ink-200: #d8d3cc;
+  --color-ink-300: #b8b0a6;
+  --color-ink-400: #8f867b;
+  --color-ink-500: #6d655c;
+  --color-ink-600: #534c45;
+  --color-ink-700: #3d3833;
+  --color-ink-800: #2c2824;
+  --color-ink-900: #1c1917;
+  --color-ink-950: #141211;
 
-  /* Warm gold: accents, prices, highlights. Used sparingly. */
-  --color-gold-50: #fdf9ed;
-  --color-gold-100: #f9efcd;
-  --color-gold-200: #f2dc98;
-  --color-gold-300: #e8c25f;
-  --color-gold-400: #dcaa38;
-  --color-gold-500: #c9a227;
-  --color-gold-600: #a8811f;
-  --color-gold-700: #85631d;
-  --color-gold-800: #6e5020;
-  --color-gold-900: #5d4320;
+  /* Muted terracotta: the single brand accent. */
+  --color-gold-50: #fbf4f1;
+  --color-gold-100: #f6e6df;
+  --color-gold-200: #edcdbf;
+  --color-gold-300: #e0a88f;
+  --color-gold-400: #d07a5b;
+  --color-gold-500: #c45c3e;
+  --color-gold-600: #a84a32;
+  --color-gold-700: #8a3c2a;
+  --color-gold-800: #6b3125;
+  --color-gold-900: #4a241c;
 
-  /* Off-white page canvas — softer than pure white for long browsing. */
-  --color-canvas: #fbfaf7;
+  /* Warm white canvas with a clearer beige for tinted bands. */
+  --color-canvas: #fffdfb;
   --color-canvas-raised: #ffffff;
-  --color-canvas-sunken: #f3f1ec;
+  --color-canvas-sunken: #f4ebe3;
 
   /* Semantic status colours for stock, orders and payments. */
   --color-success-50: #ecfdf3;
+  --color-success-100: #d3f8e3;
   --color-success-500: #12855a;
   --color-success-700: #0b6444;
   --color-warning-50: #fff8eb;
+  --color-warning-100: #fdecc8;
   --color-warning-500: #b57415;
   --color-warning-700: #8a570f;
   --color-danger-50: #fef2f2;
+  --color-danger-100: #fde0de;
   --color-danger-500: #c0392b;
   --color-danger-700: #96271b;
 
-  /* Typography: a display serif for headings, Inter for everything else. */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  /* One readable sans for UI and headings. */
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 
-  /* Editorial-scale headings. */
-  --text-display: 3.5rem;
-  --text-display--line-height: 1.05;
-  --text-display--letter-spacing: -0.02em;
+  --text-display: 3.15rem;
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.035em;
+  --text-display--font-weight: 700;
 
-  /* Consistent card and control radii. */
-  --radius-card: 0.875rem;
-  --radius-control: 0.625rem;
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
 
-  /* Low-contrast, layered shadows — no glow effects. */
-  --shadow-card: 0 1px 2px rgb(16 26 46 / 0.04), 0 8px 24px -12px rgb(16 26 46 / 0.12);
-  --shadow-card-hover: 0 1px 2px rgb(16 26 46 / 0.05), 0 16px 40px -16px rgb(16 26 46 / 0.2);
+  --shadow-card: 0 1px 2px rgb(28 25 23 / 0.04), 0 8px 24px -14px rgb(28 25 23 / 0.1);
+  --shadow-card-hover: 0 1px 2px rgb(28 25 23 / 0.05), 0 16px 36px -16px rgb(28 25 23 / 0.16);
+  --shadow-panel: 0 20px 48px -24px rgb(20 18 17 / 0.28);
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --spacing-header: 4rem;
+  --spacing-header-lg: 4.5rem;
+
+  --animate-fade-in: fade-in 0.35s var(--ease-out-soft) both;
+  --animate-rise: rise 0.45s var(--ease-out-soft) both;
+  --animate-slide-in-left: slide-in-left 0.28s var(--ease-out-soft) both;
+  --animate-slide-in-right: slide-in-right 0.28s var(--ease-out-soft) both;
+  --animate-shimmer: shimmer 1.4s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes shimmer {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
     -webkit-tap-highlight-color: transparent;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -83,20 +144,23 @@
 
   h1,
   h2,
-  h3 {
-    @apply font-display text-ink-900 tracking-tight;
+  h3,
+  h4 {
+    @apply font-display text-ink-900 font-semibold tracking-tight;
   }
 
-  /* Visible, on-brand focus ring for keyboard users on every interactive element. */
   :focus-visible {
-    @apply outline-gold-500 outline-2 outline-offset-2;
+    @apply outline-gold-600 outline-2 outline-offset-2;
   }
 
   ::selection {
-    @apply bg-gold-200 text-ink-900;
+    @apply bg-gold-100 text-ink-900;
   }
 
-  /* Respect users who have asked for less motion. */
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -113,13 +177,41 @@
 }
 
 @layer components {
-  /* Page gutter that stays consistent from mobile through desktop. */
   .gv-container {
-    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-[86rem] px-4 sm:px-6 lg:px-8 xl:px-10;
   }
 
-  /* Small caps label used above section headings. */
   .gv-eyebrow {
-    @apply text-ink-500 text-xs font-semibold tracking-[0.18em] uppercase;
+    @apply text-gold-700 text-xs font-semibold tracking-[0.14em] uppercase;
+  }
+
+  .gv-section {
+    @apply py-10 sm:py-12 lg:py-16;
+  }
+
+  .gv-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.55s var(--ease-out-soft) var(--reveal-delay, 0ms),
+      transform 0.55s var(--ease-out-soft) var(--reveal-delay, 0ms);
+  }
+
+  .gv-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .gv-scrim {
+    background: linear-gradient(180deg, transparent 45%, rgb(28 25 23 / 0.55) 100%);
+  }
+
+  .gv-scroll-x {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .gv-scroll-x::-webkit-scrollbar {
+    display: none;
   }
 }

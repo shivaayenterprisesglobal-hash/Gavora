@@ -11,10 +11,17 @@
   "scripts": {
     "dev": "node --env-file-if-exists=.env --watch src/index.js",
     "start": "node --env-file-if-exists=.env src/index.js",
+    "seed": "node --env-file-if-exists=.env src/seed/seedCatalogue.js",
+    "seed:admin": "node --env-file-if-exists=.env src/seed/seedAdmin.js",
+    "seed:prisma": "node --env-file-if-exists=.env src/seed/seedPrismaCatalogue.js",
+    "prisma:generate": "prisma generate",
+    "prisma:validate": "prisma validate",
+    "migrate:mongo-to-neon": "node --env-file-if-exists=.env src/migrate/mongoToNeon.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.2",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
@@ -31,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "eslint": "^10.10.0",
-    "globals": "^16.5.0"
+    "globals": "^16.5.0",
+    "prisma": "^6.19.3"
   }
 }

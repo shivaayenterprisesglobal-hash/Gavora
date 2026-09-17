@@ -102,6 +102,8 @@ productSchema.index({ name: 'text', description: 'text', brand: 'text', sku: 'te
 // Supports the default shop listing: active products filtered by category and sorted by price.
 productSchema.index({ status: 1, category: 1, price: 1 });
 productSchema.index({ status: 1, unitsSold: -1 });
+productSchema.index({ status: 1, slug: 1 });
+productSchema.index({ status: 1, isFeatured: 1, unitsSold: -1 });
 
 /** The price a customer actually pays. */
 productSchema.virtual('effectivePrice').get(function getEffectivePrice() {

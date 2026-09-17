@@ -17,6 +17,8 @@
     "dev:client": "npm run dev --workspace client",
     "build": "npm run build --workspace client",
     "start": "npm run start --workspace server",
+    "seed": "npm run seed --workspace server",
+    "seed:admin": "npm run seed:admin --workspace server",
     "preview": "npm run preview --workspace client",
     "lint": "npm run lint --workspace server && npm run lint --workspace client",
     "lint:fix": "npm run lint:fix --workspace server && npm run lint:fix --workspace client",

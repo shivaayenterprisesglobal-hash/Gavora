@@ -71,6 +71,8 @@ const userSchema = new mongoose.Schema(
     addresses: { type: [addressSchema], default: [] },
     isActive: { type: Boolean, default: true },
     lastLoginAt: { type: Date },
+    // Used to reject JWTs issued before a password change without a token store.
+    passwordChangedAt: { type: Date, default: null, select: false },
   },
   {
     timestamps: true,
@@ -78,6 +80,7 @@ const userSchema = new mongoose.Schema(
       virtuals: true,
       transform(_doc, ret) {
         delete ret.passwordHash;
+        delete ret.passwordChangedAt;
         delete ret.__v;
         return ret;
       },
@@ -89,6 +92,8 @@ const userSchema = new mongoose.Schema(
 userSchema.virtual('defaultAddress').get(function getDefaultAddress() {
   return this.addresses?.find((address) => address.isDefault) ?? this.addresses?.[0] ?? null;
 });
+
+userSchema.index({ role: 1, isActive: 1 });
 
 // Exactly one default address per user.
 userSchema.pre('save', function enforceSingleDefaultAddress() {

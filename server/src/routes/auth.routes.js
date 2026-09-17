@@ -1,14 +1,25 @@
 import { Router } from 'express';
 
-import { notImplemented } from '../middleware/notImplemented.js';
+import {
+  adminLogin,
+  login,
+  logout,
+  me,
+  refreshSession,
+  signup,
+} from '../controllers/authController.js';
+import { requireAuth } from '../middleware/auth.js';
 import { authLimiter } from '../middleware/rateLimit.js';
+import { validate } from '../middleware/validate.js';
+import { loginSchema, signupSchema } from '../validators/authValidators.js';
 
 export const authRouter = Router();
 
-authRouter.post('/signup', authLimiter, notImplemented('customer signup'));
-authRouter.post('/login', authLimiter, notImplemented('customer login'));
-authRouter.post('/logout', notImplemented('logout and refresh-token revocation'));
-authRouter.post('/refresh', notImplemented('access token refresh'));
-authRouter.get('/me', notImplemented('return the authenticated user'));
+authRouter.post('/signup', authLimiter, validate({ body: signupSchema }), signup);
+authRouter.post('/login', authLimiter, validate({ body: loginSchema }), login);
+authRouter.post('/admin/login', authLimiter, validate({ body: loginSchema }), adminLogin);
+authRouter.post('/logout', logout);
+authRouter.post('/refresh', refreshSession);
+authRouter.get('/me', requireAuth, me);
 
 export default authRouter;

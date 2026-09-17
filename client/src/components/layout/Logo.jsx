@@ -7,17 +7,17 @@ export function Logo({ to = '/', className, tone = 'dark' }) {
     <Link
       to={to}
       aria-label="Gavora home"
-      className={cn('inline-flex items-baseline gap-0.5', className)}
+      className={cn('inline-flex items-center gap-1', className)}
     >
       <span
         className={cn(
-          'font-display text-2xl leading-none font-semibold tracking-tight',
+          'font-display text-[1.6rem] leading-none font-bold tracking-tight',
           tone === 'dark' ? 'text-ink-900' : 'text-canvas',
         )}
       >
         Gavora
       </span>
-      <span aria-hidden="true" className="bg-gold-500 size-1.5 rounded-full" />
+      <span aria-hidden="true" className="bg-gold-500 mt-0.5 size-1.5 rounded-full" />
     </Link>
   );
 }

@@ -45,6 +45,9 @@ const categorySchema = new mongoose.Schema(
   },
 );
 
+// unique: true on slug already creates a unique slug index.
+categorySchema.index({ status: 1, displayOrder: 1, name: 1 });
+
 categorySchema.pre('validate', function deriveSlug() {
   if (!this.slug && this.name) {
     this.slug = slugify(this.name);

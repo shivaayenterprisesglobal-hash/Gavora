@@ -1,3 +1,7 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -11,8 +15,38 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 import { apiLimiter } from './middleware/rateLimit.js';
 import { sanitizeRequest } from './middleware/sanitize.js';
+import { verifyRequestOrigin } from './middleware/originCheck.js';
 import { apiRouter } from './routes/index.js';
 import { logger } from './utils/logger.js';
+
+const clientDistDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist');
+const clientIndexFile = path.join(clientDistDir, 'index.html');
+
+function serveProductionClient(app) {
+  const hasBuild = existsSync(clientIndexFile);
+
+  if (!hasBuild) {
+    logger.error(
+      `Production client build not found at ${clientDistDir}. Run npm run build before starting.`,
+    );
+  } else {
+    logger.info(`Serving storefront from ${clientDistDir}`);
+  }
+
+  // Hashed Vite assets. index.html is not auto-served so / still goes through
+  // the SPA fallback below.
+  app.use(express.static(clientDistDir, { index: false, fallthrough: true }));
+
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+    // API 404s must stay JSON. Never return the storefront for /api/*.
+    if (req.path === '/api' || req.path.startsWith('/api/')) return next();
+    // Missing .js/.css should 404, not receive index.html.
+    if (path.extname(req.path)) return next();
+    if (!hasBuild) return next();
+    return res.sendFile(clientIndexFile);
+  });
+}
 
 export function createApp() {
   const app = express();
@@ -24,7 +58,7 @@ export function createApp() {
 
   app.use(
     helmet({
-      // The API serves JSON only; CSP belongs to whatever serves the client.
+      // CSP stays off: the storefront loads Google Fonts from index.html.
       contentSecurityPolicy: false,
       crossOriginResourcePolicy: { policy: 'cross-origin' },
       referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
@@ -37,6 +71,7 @@ export function createApp() {
   app.use(express.urlencoded({ extended: true, limit: '1mb' }));
   app.use(cookieParser());
   app.use(sanitizeRequest);
+  app.use(verifyRequestOrigin);
 
   if (!isTest) {
     app.use(
@@ -47,6 +82,10 @@ export function createApp() {
   }
 
   app.use('/api', apiLimiter, apiRouter);
+
+  if (isProduction) {
+    serveProductionClient(app);
+  }
 
   // Express 5 uses path-to-regexp v8, which rejects a bare '*' route pattern,
   // so the catch-all is registered as plain middleware.

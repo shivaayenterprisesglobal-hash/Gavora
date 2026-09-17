@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gavora">
-  <rect width="64" height="64" rx="14" fill="#101a2e" />
+  <rect width="64" height="64" rx="14" fill="#c45c3e" />
   <path
     d="M41.8 24.6c-1.9-3.2-5.3-5.2-9.5-5.2-6.6 0-11.4 5-11.4 12.1S25.7 43.6 32.4 43.6c5.1 0 8.8-2.7 9.9-7.1h-9.9v-5.6h16.2v3.3c0 9.4-6.6 15.6-16.2 15.6C21.6 49.8 14 42.2 14 31.5S21.7 13.2 32.4 13.2c7.2 0 13 3.5 15.6 9.2z"
-    fill="#c9a227"
+    fill="#faf7f2"
   />
 </svg>

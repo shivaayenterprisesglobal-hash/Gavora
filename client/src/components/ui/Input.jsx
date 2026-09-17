@@ -1,46 +1,90 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 
+import Field from '@/components/ui/Field';
+import Icon from '@/components/ui/Icon';
+import { controlClass } from '@/components/ui/controlClass';
 import { cn } from '@/utils/cn';
 
-/**
- * Labelled text input with inline error messaging. The label is always present
- * (never placeholder-only) and errors are wired via aria-describedby.
- */
-export function Input({ label, hint, error, className, id, type = 'text', ...props }) {
+export function Input({
+  label,
+  hint,
+  error,
+  required,
+  className,
+  id,
+  type = 'text',
+  srOnlyLabel = false,
+  ...props
+}) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
-  const describedBy = error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined;
+  const [visible, setVisible] = useState(false);
+  const isPassword = type === 'password';
+  const resolvedType = isPassword && visible ? 'text' : type;
 
-  return (
-    <div className={cn('flex flex-col gap-1.5', className)}>
-      {label && (
-        <label htmlFor={inputId} className="text-ink-700 text-sm font-medium">
-          {label}
-        </label>
-      )}
+  const control = ({ describedBy }) => (
+    <div className="relative">
       <input
         id={inputId}
-        type={type}
+        type={resolvedType}
+        required={required}
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={describedBy}
-        className={cn(
-          'rounded-control border bg-canvas-raised text-ink-900 placeholder:text-ink-300 h-11 w-full px-3.5 text-sm transition-colors',
-          error ? 'border-danger-500' : 'border-ink-200 hover:border-ink-300',
-        )}
+        className={cn(controlClass(error), 'h-12 px-3.5', isPassword && 'pr-12')}
+        data-cursor="input"
         {...props}
       />
-      {error ? (
-        <p id={`${inputId}-error`} className="text-danger-500 text-xs">
-          {error}
-        </p>
-      ) : (
-        hint && (
-          <p id={`${inputId}-hint`} className="text-ink-400 text-xs">
-            {hint}
-          </p>
-        )
+      {isPassword && (
+        <button
+          type="button"
+          onClick={() => setVisible((current) => !current)}
+          className="text-ink-400 hover:text-ink-800 absolute inset-y-0 right-0 flex w-11 items-center justify-center"
+          aria-label={visible ? 'Hide password' : 'Show password'}
+          aria-pressed={visible}
+          data-cursor="icon"
+        >
+          <Icon name={visible ? 'eyeOff' : 'eye'} size="sm" />
+        </button>
       )}
     </div>
+  );
+
+  if (srOnlyLabel) {
+    return (
+      <div className={className}>
+        <label htmlFor={inputId} className="sr-only">
+          {label}
+        </label>
+        {control({ describedBy: undefined })}
+      </div>
+    );
+  }
+
+  return (
+    <Field id={inputId} label={label} hint={hint} error={error} required={required} className={className}>
+      {control}
+    </Field>
+  );
+}
+
+export function Textarea({ label, hint, error, required, className, id, rows = 4, ...props }) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+
+  return (
+    <Field id={inputId} label={label} hint={hint} error={error} required={required} className={className}>
+      {({ describedBy }) => (
+        <textarea
+          id={inputId}
+          rows={rows}
+          required={required}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={describedBy}
+          className={cn(controlClass(error), 'resize-y px-3.5 py-2.5')}
+          {...props}
+        />
+      )}
+    </Field>
   );
 }
 

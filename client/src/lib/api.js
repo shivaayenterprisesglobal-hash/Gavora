@@ -6,6 +6,12 @@ import axios from 'axios';
  * Defaults to the relative "/api" path so the Vite dev proxy handles local work
  * and a same-origin deployment needs no configuration. VITE_API_URL overrides
  * it when the API is hosted on a different origin.
+ *
+ * Authentication is cookie-based: the server sets an httpOnly, Secure,
+ * SameSite session cookie that the browser attaches automatically because of
+ * `withCredentials`. There is deliberately no token in localStorage or in an
+ * Authorization header — a token readable by JavaScript is readable by any
+ * injected script, which is exactly what httpOnly prevents.
  */
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -14,58 +20,96 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const ACCESS_TOKEN_KEY = 'gavora.accessToken';
+/**
+ * Listeners notified when the server rejects a request as unauthenticated, so
+ * the auth provider can clear its cached user without every caller having to
+ * handle 401 itself.
+ */
+const unauthorizedListeners = new Set();
 
-export function getAccessToken() {
-  try {
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
-  } catch {
-    return null;
-  }
+export function onUnauthorized(listener) {
+  unauthorizedListeners.add(listener);
+  return () => unauthorizedListeners.delete(listener);
 }
 
-export function setAccessToken(token) {
-  try {
-    if (token) {
-      localStorage.setItem(ACCESS_TOKEN_KEY, token);
-    } else {
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
-    }
-  } catch {
-    // Storage can be unavailable in private browsing; the in-memory session
-    // still works for the current tab.
-  }
+function isAuthSessionUrl(url = '') {
+  return (
+    url.includes('/auth/me') ||
+    url.includes('/auth/login') ||
+    url.includes('/auth/signup') ||
+    url.includes('/auth/refresh') ||
+    url.includes('/auth/logout') ||
+    url.includes('/auth/admin/login') ||
+    url.includes('/admin/auth/login')
+  );
 }
 
-api.interceptors.request.use((config) => {
-  const token = getAccessToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+function normalizeError(error) {
+  const payload = error.response?.data?.error;
+  const status = error.response?.status ?? 0;
+
+  const normalized = new Error(
+    payload?.message ||
+      (error.code === 'ECONNABORTED'
+        ? 'The request timed out. Please try again.'
+        : error.response
+          ? 'Something went wrong. Please try again.'
+          : 'Cannot reach the Gavora server. Check your connection.'),
+  );
+
+  normalized.status = status;
+  normalized.code = payload?.code ?? error.code ?? 'NETWORK_ERROR';
+  normalized.details = payload?.details;
+  return normalized;
+}
+
+let refreshPromise = null;
+
+function refreshSession() {
+  if (!refreshPromise) {
+    refreshPromise = api.post('/auth/refresh').finally(() => {
+      refreshPromise = null;
+    });
   }
-  return config;
-});
+  return refreshPromise;
+}
 
 /**
  * Flattens the server's error envelope into a predictable shape so components
  * never have to unwrap `error.response.data.error` themselves.
+ *
+ * A 401 on an ordinary request first tries the refresh cookie. If that
+ * succeeds the original call is retried once; if it fails, listeners clear
+ * the cached user. Auth endpoints are excluded so login failures and the
+ * session probe stay quiet.
  */
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const payload = error.response?.data?.error;
+  async (error) => {
+    const normalized = normalizeError(error);
+    const original = error.config;
+    const url = original?.url ?? '';
+    const skipUnauthorizedBroadcast = isAuthSessionUrl(url);
 
-    const normalized = new Error(
-      payload?.message ||
-        (error.code === 'ECONNABORTED'
-          ? 'The request timed out. Please try again.'
-          : error.response
-            ? 'Something went wrong. Please try again.'
-            : 'Cannot reach the Gavora server. Check your connection.'),
-    );
+    if (
+      normalized.status === 401 &&
+      original &&
+      !original._retry &&
+      !skipUnauthorizedBroadcast
+    ) {
+      original._retry = true;
+      try {
+        await refreshSession();
+        return api(original);
+      } catch {
+        unauthorizedListeners.forEach((listener) => listener(normalized));
+        return Promise.reject(normalized);
+      }
+    }
 
-    normalized.status = error.response?.status ?? 0;
-    normalized.code = payload?.code ?? error.code ?? 'NETWORK_ERROR';
-    normalized.details = payload?.details;
+    if (normalized.status === 401 && !skipUnauthorizedBroadcast) {
+      unauthorizedListeners.forEach((listener) => listener(normalized));
+    }
 
     return Promise.reject(normalized);
   },

@@ -1,3 +1,4 @@
+import './dns.js';
 import mongoose from 'mongoose';
 
 import { env, isProduction } from './env.js';
@@ -11,6 +12,9 @@ let retryTimer = null;
 let attempt = 0;
 
 mongoose.set('strictQuery', true);
+// Do not queue catalogue queries while Atlas is unreachable — fail the request
+// so the storefront can leave the loading state instead of hanging on skeletons.
+mongoose.set('bufferCommands', false);
 if (!isProduction) mongoose.set('debug', env.LOG_LEVEL === 'debug');
 
 mongoose.connection.on('connected', () => {

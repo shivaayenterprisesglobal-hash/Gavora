@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import Logo from '@/components/layout/Logo';
+import { useAuth } from '@/context/authContext';
 import { cn } from '@/utils/cn';
 
 const sections = [
@@ -27,6 +28,19 @@ function sectionClass({ isActive }) {
  */
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    setSigningOut(true);
+    try {
+      await logout();
+      navigate('/admin/login');
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[16rem_1fr]">
@@ -72,15 +86,25 @@ export function AdminLayout() {
           ))}
         </nav>
 
-        <NavLink
-          to="/admin/login"
-          className="text-ink-400 hover:text-canvas mt-auto px-3 py-2 text-xs transition-colors"
-        >
-          Sign out
-        </NavLink>
+        <div className="mt-auto flex flex-col gap-1">
+          <Link
+            to="/"
+            className="text-ink-400 hover:text-canvas px-3 py-2 text-left text-xs transition-colors"
+          >
+            View storefront
+          </Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={signingOut}
+            className="text-ink-400 hover:text-canvas px-3 py-2 text-left text-xs transition-colors disabled:opacity-55"
+          >
+            {signingOut ? 'Signing out…' : 'Sign out'}
+          </button>
+        </div>
       </aside>
 
-      <main className="bg-canvas-sunken min-h-dvh">
+      <main className="bg-canvas-sunken min-h-dvh overflow-x-hidden">
         <Outlet />
       </main>
     </div>
