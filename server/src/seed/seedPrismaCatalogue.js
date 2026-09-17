@@ -4,6 +4,10 @@
  *
  * Run later with: npm run seed:prisma --workspace server
  * Do not run while NODE_ENV=production.
+ *
+ * Product images: each seed product may include `images: [{ url, alt, isPrimary, position? }]`.
+ * Empty arrays clear ProductImage rows so the storefront shows the branded placeholder.
+ * When real https URLs are added later, this seed creates the matching ProductImage rows.
  */
 import { createHash } from 'node:crypto';
 
@@ -19,6 +23,21 @@ if (isProduction) {
 
 function stableId(kind, key) {
   return createHash('md5').update(`gavora:${kind}:${key}`).digest('hex').slice(0, 24);
+}
+
+/** Build ProductImage create rows. Skips blank URLs; ensures one primary when any remain. */
+function imageCreates(productId, images = []) {
+  const cleaned = images.filter((image) => typeof image?.url === 'string' && image.url.trim());
+  if (cleaned.length === 0) return [];
+
+  const hasPrimary = cleaned.some((image) => image.isPrimary);
+  return cleaned.map((image, index) => ({
+    productId,
+    url: image.url.trim(),
+    alt: image.alt ?? '',
+    isPrimary: hasPrimary ? Boolean(image.isPrimary) : index === 0,
+    position: Number.isInteger(image.position) ? image.position : index,
+  }));
 }
 
 async function seed() {
@@ -60,7 +79,7 @@ async function seed() {
       categorySlug: _categorySlug,
       createdAt,
       specifications = [],
-      images: _images,
+      images = [],
       ...fields
     } = item;
     const slug = slugify(fields.name);
@@ -111,6 +130,11 @@ async function seed() {
     await prisma.productImage.deleteMany({ where: { productId: id } });
     await prisma.productSpecification.deleteMany({ where: { productId: id } });
 
+    const imageRows = imageCreates(id, images);
+    if (imageRows.length > 0) {
+      await prisma.productImage.createMany({ data: imageRows });
+    }
+
     if (specifications.length > 0) {
       await prisma.productSpecification.createMany({
         data: specifications.map((spec, position) => ({
@@ -123,12 +147,15 @@ async function seed() {
     }
   }
 
-  const [categoryCount, productCount] = await Promise.all([
+  const [categoryCount, productCount, imageCount] = await Promise.all([
     prisma.category.count({ where: { status: 'active' } }),
     prisma.product.count({ where: { status: 'active' } }),
+    prisma.productImage.count(),
   ]);
 
-  console.log(`Prisma catalogue seed complete: ${categoryCount} active categories, ${productCount} active products.`);
+  console.log(
+    `Prisma catalogue seed complete: ${categoryCount} active categories, ${productCount} active products, ${imageCount} product images.`,
+  );
 }
 
 seed()

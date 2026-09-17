@@ -339,11 +339,13 @@ export async function listAdminProducts({ query }) {
 }
 
 function imageCreates(images = []) {
-  return images.map((image, position) => ({
-    url: image.url,
+  const cleaned = images.filter((image) => typeof image?.url === 'string' && image.url.trim());
+  const hasPrimary = cleaned.some((image) => image.isPrimary);
+  return cleaned.map((image, index) => ({
+    url: image.url.trim(),
     alt: image.alt ?? '',
-    isPrimary: Boolean(image.isPrimary),
-    position,
+    isPrimary: hasPrimary ? Boolean(image.isPrimary) : index === 0,
+    position: Number.isInteger(image.position) ? image.position : index,
   }));
 }
 

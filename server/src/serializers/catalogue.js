@@ -35,10 +35,11 @@ export function toPublicProduct(doc) {
       key: item.key,
       value: item.value,
     })),
-    images: (json.images ?? []).map((item) => ({
+    images: (json.images ?? []).map((item, index) => ({
       url: item.url,
       alt: item.alt ?? '',
       isPrimary: Boolean(item.isPrimary),
+      position: Number.isInteger(item.position) ? item.position : index,
     })),
     category: asCategorySummary(json.category),
     brand: json.brand ?? '',

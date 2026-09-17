@@ -1,4 +1,10 @@
-/** Development fixture catalogue. Not imported by the HTTP server. */
+/**
+ * Development fixture catalogue. Not imported by the HTTP server.
+ *
+ * Product photography: each product supports `images: [{ url, alt, isPrimary, position? }]`.
+ * Leave `images` empty until verified assets exist. Do not assign unrelated files from
+ * organized_products/ — the storefront uses the branded ImageFrame placeholder when empty.
+ */
 
 export const seedCategories = [
   {
@@ -63,7 +69,7 @@ function daysAgo(days) {
   return new Date(Date.now() - days * 86400000);
 }
 
-export const seedProducts = [
+const seedProductsRaw = [
   {
     categorySlug: 'fashion',
     name: 'Handloom Cotton Shirt',
@@ -401,3 +407,9 @@ export const seedProducts = [
     ],
   },
 ];
+
+/** Ensures every seeded product exposes an `images` array (empty until real URLs are added). */
+export const seedProducts = seedProductsRaw.map((product) => ({
+  ...product,
+  images: Array.isArray(product.images) ? product.images : [],
+}));

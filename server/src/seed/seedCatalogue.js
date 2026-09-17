@@ -41,7 +41,7 @@ async function seed() {
       throw new Error(`Seed category missing: ${item.categorySlug}`);
     }
 
-    const { categorySlug: _categorySlug, createdAt, ...fields } = item;
+    const { categorySlug: _categorySlug, createdAt, images = [], ...fields } = item;
 
     await Product.findOneAndUpdate(
       { sku: fields.sku },
@@ -50,7 +50,8 @@ async function seed() {
           ...fields,
           slug: slugify(fields.name),
           category: category._id,
-          images: [],
+          // Preserve seed images (empty until verified photography is available).
+          images: Array.isArray(images) ? images : [],
           status: 'active',
           createdAt,
         },
