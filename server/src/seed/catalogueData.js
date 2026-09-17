@@ -91,6 +91,38 @@ const seedProductsRaw = [
       { key: 'Fit', value: 'Relaxed regular' },
       { key: 'Care', value: 'Machine wash cold, line dry in shade' },
     ],
+    images: [
+      {
+        url: '/products/GV-FSN-1001/01-front.png',
+        alt: 'Handloom Cotton Shirt — front view',
+        isPrimary: true,
+        position: 0,
+      },
+      {
+        url: '/products/GV-FSN-1001/02-three-quarter.png',
+        alt: 'Handloom Cotton Shirt — three-quarter view',
+        isPrimary: false,
+        position: 1,
+      },
+      {
+        url: '/products/GV-FSN-1001/03-side.png',
+        alt: 'Handloom Cotton Shirt — side view',
+        isPrimary: false,
+        position: 2,
+      },
+      {
+        url: '/products/GV-FSN-1001/04-back.png',
+        alt: 'Handloom Cotton Shirt — back view',
+        isPrimary: false,
+        position: 3,
+      },
+      {
+        url: '/products/GV-FSN-1001/05-fabric-detail.png',
+        alt: 'Handloom Cotton Shirt — fabric detail',
+        isPrimary: false,
+        position: 4,
+      },
+    ],
   },
   {
     categorySlug: 'fashion',
