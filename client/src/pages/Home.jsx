@@ -12,32 +12,13 @@ import SectionError from '@/components/ui/SectionError';
 import SectionHeading from '@/components/ui/SectionHeading';
 import useAsyncData from '@/hooks/useAsyncData';
 import useDocumentMeta from '@/hooks/useDocumentMeta';
-import { getBestSellers, getFeaturedProducts, getNewArrivals, listCategories } from '@/lib/catalog';
-
-/** True when the product has a usable primary photograph URL. */
-function hasProductImage(product) {
-  return Boolean(product?.images?.length && product.images[0]?.url);
-}
-
-/**
- * Prefer image-bearing catalogue items for home visual compositions.
- * Walks pools in order (featured → best sellers → newest) without duplicates.
- */
-function pickProductsWithImages(pools, count) {
-  const seen = new Set();
-  const picked = [];
-
-  for (const pool of pools) {
-    for (const product of pool ?? []) {
-      if (!product?._id || seen.has(product._id) || !hasProductImage(product)) continue;
-      seen.add(product._id);
-      picked.push(product);
-      if (picked.length >= count) return picked;
-    }
-  }
-
-  return picked;
-}
+import {
+  getBestSellers,
+  getFeaturedProducts,
+  getNewArrivals,
+  listCategories,
+  pickProductsWithImages,
+} from '@/lib/catalog';
 
 /**
  * Home page.
@@ -71,7 +52,8 @@ export function Home() {
     error: bestSellersError,
     reload: reloadBestSellers,
   } = useAsyncData(() => getBestSellers(5), []);
-  const { data: newest } = useAsyncData(() => getNewArrivals(16), []);
+  // Wider newest pool so home visual sections can draw from the full imported catalogue.
+  const { data: newest } = useAsyncData(() => getNewArrivals(32), []);
 
   const categoryList = categories ?? [];
   const featuredList = featured ?? [];
@@ -80,7 +62,9 @@ export function Home() {
 
   const visualPools = [featuredList, bestSellerList, newestList];
   const heroProducts = pickProductsWithImages(visualPools, 4);
-  const featuredGrid = featuredList;
+  // Featured grid: keep existing 8-card layout, but fill from the full catalogue
+  // (featured with photos first, then newest image-bearing products).
+  const featuredGrid = pickProductsWithImages([featuredList, newestList], 8);
   const promoProducts = pickProductsWithImages([newestList, featuredList, bestSellerList], 3);
   const closingProducts = pickProductsWithImages([newestList, bestSellerList, featuredList], 4);
 

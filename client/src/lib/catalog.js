@@ -9,6 +9,42 @@ import api from '@/lib/api';
  * which remain labelled as sample layout until the reviews phase).
  */
 
+/** True when the product has a usable primary photograph URL. */
+export function hasProductImage(product) {
+  return Boolean(product?.images?.length && product.images[0]?.url);
+}
+
+/**
+ * Prefer image-bearing catalogue items for visual compositions.
+ * Walks pools in order without duplicates, stopping at `count`.
+ */
+export function pickProductsWithImages(pools, count) {
+  const seen = new Set();
+  const picked = [];
+
+  for (const pool of pools) {
+    for (const product of pool ?? []) {
+      if (!product?._id || seen.has(product._id) || !hasProductImage(product)) continue;
+      seen.add(product._id);
+      picked.push(product);
+      if (picked.length >= count) return picked;
+    }
+  }
+
+  return picked;
+}
+
+/** Stable reorder: products with photos first, relative order otherwise unchanged. */
+export function preferProductsWithImages(products = []) {
+  const withImages = [];
+  const withoutImages = [];
+  for (const product of products) {
+    if (hasProductImage(product)) withImages.push(product);
+    else withoutImages.push(product);
+  }
+  return [...withImages, ...withoutImages];
+}
+
 export const SORT_OPTIONS = [
   { value: 'relevance', label: 'Relevance' },
   { value: 'newest', label: 'Newest first' },

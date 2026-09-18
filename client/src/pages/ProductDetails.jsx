@@ -19,7 +19,7 @@ import { useCart } from '@/context/cartContext';
 import { useToast } from '@/context/toastContext';
 import useAsyncData from '@/hooks/useAsyncData';
 import useDocumentMeta from '@/hooks/useDocumentMeta';
-import { getProductBySlug, getRelatedProducts } from '@/lib/catalog';
+import { getProductBySlug, getRelatedProducts, preferProductsWithImages } from '@/lib/catalog';
 import { DELIVERY_ESTIMATE_DAYS, FREE_SHIPPING_THRESHOLD } from '@/lib/storeRules';
 import { formatCurrency } from '@/utils/format';
 
@@ -259,7 +259,7 @@ export function ProductDetails() {
           />
         ) : (
           <ProductRail
-            products={related ?? []}
+            products={preferProductsWithImages(related ?? [])}
             isLoading={loadingRelated}
             label="Related products"
             className="mt-6"
