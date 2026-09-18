@@ -15,6 +15,50 @@ export function hasProductImage(product) {
 }
 
 /**
+ * Attach a catalogue product photograph to each category that lacks its own image.
+ * Uses the first image-bearing product per category slug; pass products in preference
+ * order (e.g. best-selling) so the tile picks a strong representative.
+ */
+export function enrichCategoriesWithProductImages(categories = [], products = []) {
+  const firstBySlug = new Map();
+  for (const product of products) {
+    const slug = product?.category?.slug;
+    if (!slug || firstBySlug.has(slug) || !hasProductImage(product)) continue;
+    firstBySlug.set(slug, product);
+  }
+
+  return categories.map((category) => {
+    if (category?.image?.url) return category;
+    const product = firstBySlug.get(category.slug);
+    if (!product) return category;
+    const image = product.images[0];
+    return {
+      ...category,
+      image: {
+        url: image.url,
+        alt: image.alt || product.name || category.name,
+      },
+    };
+  });
+}
+
+/** Categories for storefront tiles, each carrying a real product image when available. */
+export async function listCategoriesWithProductImages() {
+  const categories = await listCategories();
+  const listings = await Promise.all(
+    categories.map((category) =>
+      listProducts({
+        category: category.slug,
+        pageSize: 8,
+        sort: 'best-selling',
+      }),
+    ),
+  );
+  const products = listings.flatMap((listing) => listing.items);
+  return enrichCategoriesWithProductImages(categories, products);
+}
+
+/**
  * Prefer image-bearing catalogue items for visual compositions.
  * Walks pools in order without duplicates, stopping at `count`.
  */

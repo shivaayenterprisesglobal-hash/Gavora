@@ -16,7 +16,7 @@ import {
   getBestSellers,
   getFeaturedProducts,
   getNewArrivals,
-  listCategories,
+  listCategoriesWithProductImages,
   pickProductsWithImages,
 } from '@/lib/catalog';
 
@@ -39,7 +39,7 @@ export function Home() {
     isLoading: loadingCategories,
     error: categoriesError,
     reload: reloadCategories,
-  } = useAsyncData(listCategories, []);
+  } = useAsyncData(listCategoriesWithProductImages, []);
   const {
     data: featured,
     isLoading: loadingFeatured,

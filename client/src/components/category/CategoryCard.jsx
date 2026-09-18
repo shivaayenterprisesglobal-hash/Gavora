@@ -5,11 +5,14 @@ import ImageFrame from '@/components/ui/ImageFrame';
 import { cn } from '@/utils/cn';
 
 /**
- * Category shopping tile. The visual is a branded field until photography
- * exists; the category name is always on the tile.
+ * Category shopping tile. Prefers a real category/product photograph; falls
+ * back to the branded ImageFrame placeholder when no URL is available.
  */
 export function CategoryCard({ category, featured = false, className }) {
   if (!category) return null;
+
+  const imageUrl = category.image?.url;
+  const imageAlt = category.image?.alt || category.name;
 
   return (
     <Link
@@ -20,8 +23,8 @@ export function CategoryCard({ category, featured = false, className }) {
       )}
     >
       <ImageFrame
-        src={category.image?.url}
-        alt=""
+        src={imageUrl}
+        alt={imageUrl ? imageAlt : ''}
         seed={category.name}
         caption={category.name}
         meta="Shop"
