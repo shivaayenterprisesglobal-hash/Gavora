@@ -23,7 +23,7 @@ export function parseShopSearch(searchParams) {
     minPrice: min === null || min === '' ? undefined : Number(min),
     maxPrice: max === null || max === '' ? undefined : Number(max),
     availability: AVAILABILITY_VALUES.has(availability) ? availability : 'all',
-    sort: SORT_VALUES.has(sort) ? sort : 'relevance',
+    sort: SORT_VALUES.has(sort) ? sort : 'newest',
     page: Number.isInteger(page) && page > 0 ? page : 1,
   };
 }
@@ -44,7 +44,7 @@ export function mergeShopSearch(searchParams, patch) {
       value === null ||
       value === '' ||
       (key === 'availability' && value === 'all') ||
-      (key === 'sort' && value === 'relevance') ||
+      (key === 'sort' && value === 'newest') ||
       (key === 'page' && value === 1);
 
     if (empty) {
