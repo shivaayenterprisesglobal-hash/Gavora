@@ -32,11 +32,11 @@ export function CategoryGrid({ categories = [], isLoading = false, skeletonCount
   return (
     <ul
       aria-label="Product categories"
-      className={cn('grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4', className)}
+      className={cn('grid grid-cols-2 items-start gap-3 sm:grid-cols-4 sm:gap-4', className)}
     >
       {categories.map((category, index) => (
         <li key={category._id} className={cn('min-h-0', tileClass(index))}>
-          <CategoryCard category={category} featured={index === 0 || index === 3} className="h-full" />
+          <CategoryCard category={category} featured={index === 0 || index === 3} />
         </li>
       ))}
     </ul>
