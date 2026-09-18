@@ -3,7 +3,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
 
 function tileClass(index) {
-  if (index === 0 || index === 3) return 'sm:col-span-2';
+  if (index === 0 || index === 3 || index === 6 || index === 7) return 'sm:col-span-2';
   return '';
 }
 
