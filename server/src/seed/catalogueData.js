@@ -147,6 +147,14 @@ const seedProductsRaw = [
       { key: 'Material', value: '55% linen, 45% cotton' },
       { key: 'Fit', value: 'Tapered' },
     ],
+    images: [
+      {
+        url: '/products/GV-FSN-1003/01-front.png',
+        alt: 'Linen Blend Trousers — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'home-kitchen',
@@ -168,6 +176,14 @@ const seedProductsRaw = [
       { key: 'Material', value: 'Cast iron, pre-seasoned' },
       { key: 'Diameter', value: '26 cm' },
       { key: 'Compatibility', value: 'Gas, induction, oven, open flame' },
+    ],
+    images: [
+      {
+        url: '/products/GV-HMK-2002/01-front.png',
+        alt: 'Cast Iron Skillet 26cm — front view',
+        isPrimary: true,
+        position: 0,
+      },
     ],
   },
   {
@@ -191,6 +207,14 @@ const seedProductsRaw = [
       { key: 'Height', value: '42 cm' },
       { key: 'Bulb', value: 'E27, max 15W LED (not included)' },
     ],
+    images: [
+      {
+        url: '/products/GV-HMK-2001/01-front.png',
+        alt: 'Brass Table Lamp — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'jewellery',
@@ -213,6 +237,14 @@ const seedProductsRaw = [
       { key: 'Diameter', value: '24 mm' },
       { key: 'Hallmark', value: 'BIS hallmarked' },
     ],
+    images: [
+      {
+        url: '/products/GV-JWL-3001/01-front.png',
+        alt: 'Sterling Silver Hoop Earrings — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'jewellery',
@@ -232,6 +264,14 @@ const seedProductsRaw = [
     specifications: [
       { key: 'Material', value: 'Oxidised brass alloy' },
       { key: 'Drop length', value: '52 mm' },
+    ],
+    images: [
+      {
+        url: '/products/GV-JWL-3003/01-front.png',
+        alt: 'Oxidised Silver Jhumkas — front view',
+        isPrimary: true,
+        position: 0,
+      },
     ],
   },
   {
@@ -254,6 +294,14 @@ const seedProductsRaw = [
       { key: 'Ingredients', value: '100% Argania spinosa kernel oil' },
       { key: 'Volume', value: '100 ml' },
     ],
+    images: [
+      {
+        url: '/products/GV-BTY-4001/01-front.png',
+        alt: 'Cold Pressed Argan Hair Oil — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'beauty',
@@ -273,6 +321,14 @@ const seedProductsRaw = [
     specifications: [
       { key: 'Key actives', value: '10% ethyl ascorbic acid, 1% hyaluronic acid' },
       { key: 'Volume', value: '30 ml' },
+    ],
+    images: [
+      {
+        url: '/products/GV-BTY-4002/01-front.png',
+        alt: 'Vitamin C Face Serum — front view',
+        isPrimary: true,
+        position: 0,
+      },
     ],
   },
   {
@@ -296,6 +352,14 @@ const seedProductsRaw = [
       { key: 'Pieces', value: '60 blocks in 8 shapes' },
       { key: 'Age', value: '3 years and above' },
     ],
+    images: [
+      {
+        url: '/products/GV-TOY-5001/01-front.png',
+        alt: 'Wooden Building Blocks Set — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'toys',
@@ -315,6 +379,14 @@ const seedProductsRaw = [
       { key: 'Material', value: 'Plywood with water-based paint' },
       { key: 'Pieces', value: '12' },
       { key: 'Age', value: '18 months and above' },
+    ],
+    images: [
+      {
+        url: '/products/GV-TOY-5003/01-front.png',
+        alt: 'Wooden Shape Puzzle Board — front view',
+        isPrimary: true,
+        position: 0,
+      },
     ],
   },
   {
@@ -337,6 +409,14 @@ const seedProductsRaw = [
       { key: 'Material', value: '18 oz waxed canvas, full-grain leather trim' },
       { key: 'Capacity', value: '38 litres' },
     ],
+    images: [
+      {
+        url: '/products/GV-BAG-6001/01-front.png',
+        alt: 'Waxed Canvas Weekender — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'bags',
@@ -357,6 +437,14 @@ const seedProductsRaw = [
       { key: 'Material', value: 'Recycled polyester, water-resistant coating' },
       { key: 'Laptop', value: 'Fits up to 15 inch' },
       { key: 'Capacity', value: '22 litres' },
+    ],
+    images: [
+      {
+        url: '/products/GV-BAG-6002/01-front.png',
+        alt: 'Everyday Laptop Backpack — front view',
+        isPrimary: true,
+        position: 0,
+      },
     ],
   },
   {
@@ -380,6 +468,14 @@ const seedProductsRaw = [
       { key: 'Pages', value: '192, dotted 5 mm' },
       { key: 'Size', value: 'A5, 148 x 210 mm' },
     ],
+    images: [
+      {
+        url: '/products/GV-STN-7001/01-front.png',
+        alt: 'Hardbound Dotted Notebook — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'stationery',
@@ -399,6 +495,14 @@ const seedProductsRaw = [
     specifications: [
       { key: 'Body', value: 'Machined solid brass' },
       { key: 'Nib', value: 'German steel, fine' },
+    ],
+    images: [
+      {
+        url: '/products/GV-STN-7002/01-front.png',
+        alt: 'Brass Fountain Pen — front view',
+        isPrimary: true,
+        position: 0,
+      },
     ],
   },
   {
@@ -421,6 +525,14 @@ const seedProductsRaw = [
       { key: 'Includes', value: '6 teas, 50 g each, with brewing card' },
       { key: 'Origins', value: 'Darjeeling, Assam, Nilgiris' },
     ],
+    images: [
+      {
+        url: '/products/GV-GFT-8001/01-front.png',
+        alt: 'Artisan Tea Gift Box — front view',
+        isPrimary: true,
+        position: 0,
+      },
+    ],
   },
   {
     categorySlug: 'gifts',
@@ -440,6 +552,14 @@ const seedProductsRaw = [
     specifications: [
       { key: 'Includes', value: 'Almonds, cashews, pistachios, raisins' },
       { key: 'Net weight', value: '600 g total' },
+    ],
+    images: [
+      {
+        url: '/products/GV-GFT-8004/01-front.png',
+        alt: 'Festive Dry Fruit Tin — front view',
+        isPrimary: true,
+        position: 0,
+      },
     ],
   },
 ];
